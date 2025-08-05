@@ -32,8 +32,10 @@ async def mcver_handle():
     data = response.json()
     latest_release = data['latest']['release']
     latest_snapshot = data['latest']['snapshot']
+    latest_release_changelog = get_changelog(latest_release)
+    latest_snapshot_changelog = get_changelog(latest_snapshot)
     # 发送消息
-    await mcver.finish(message=Message(f'最新正式版：{latest_release}\n最新快照版：{latest_snapshot}'))
+    await mcver.finish(message=Message(f'最新正式版：{latest_release}\n更新日志：{latest_release_changelog}\n最新快照版：{latest_snapshot}\n更新日志：{latest_snapshot_changelog}'))
 
 # 获取nonebot的调度器
 scheduler = require('nonebot_plugin_apscheduler').scheduler
@@ -55,15 +57,29 @@ async def check_mc_update(bot: Bot):
         release_time = datetime.strptime(release_time, '%Y-%m-%dT%H:%M:%S%z')
         release_time = release_time.replace(hour=release_time.hour + 8)
         release_time = release_time.strftime('%Y-%m-%dT%H:%M:%S+08')
+        changelog = get_changelog(version["id"])
         for i in mcver_group_id:
             int(i)
             await bot.send_group_msg(
                 group_id=i,
-                message=Message(f'发现MC更新：{version["id"]} ({version["type"]})\n时间：{release_time}')
+                message=Message(f'发现MC更新：{version["id"]} ({version["type"]})\n时间：{release_time}\n更新日志：{changelog}')
             )
         with open('data/latest_version.txt', 'w') as f:
             f.write(version["id"])
         logger.success("已发现并成功推送MC版本更新信息")
+
+def get_changelog(version):
+    changelog = ''
+    if ('pre' in version) or ('rc' in version):
+        id = version.replace('.', '-').replace('rc', 'release-candidate-').replace('pre', 'pre-release-')
+        changelog = 'https://www.minecraft.net/en-us/article/minecraft-' + id
+    elif 'w' in version:
+        id = version.replace('b', 'a')
+        changelog = 'https://www.minecraft.net/en-us/article/minecraft-snapshot-' + id
+    else:
+        id = version.replace('.', '-')
+        changelog = 'https://www.minecraft.net/en-us/article/minecraft-java-edition-' + id
+    return changelog
 
 # 定义定时任务，每分钟检查一次Minecraft更新
 @scheduler.scheduled_job('interval', minutes=1)
