@@ -1,4 +1,5 @@
 from nonebot.plugin import PluginMetadata
+from pydantic import BaseModel
 
 __plugin_meta__ = PluginMetadata(
     name="MC版本更新检测",
@@ -13,12 +14,18 @@ __plugin_meta__ = PluginMetadata(
 import os
 import httpx
 from datetime import datetime
-from nonebot import on_command, get_driver, get_bots, require, Config, logger
+from nonebot import on_command, get_bots, require, logger, get_plugin_config
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.message import Message
 
-env_config = Config(**get_driver().config.dict())
-mcver_group_id = list(env_config.mcver_group_id)
+# 定义配置模型
+class MCVersionConfig(BaseModel):
+    mcver_group_id: list[str] = []
+    """MC版本更新推送的群组ID列表"""
+
+# 获取配置
+config = get_plugin_config(MCVersionConfig)
+mcver_group_id = config.mcver_group_id
 
 # 定义命令“mcver”
 mcver = on_command('mcver', aliases={'mcversion', 'MC版本'}, priority=50)
@@ -55,15 +62,23 @@ async def check_mc_update(bot: Bot):
         release_time = datetime.strptime(release_time, '%Y-%m-%dT%H:%M:%S%z')
         release_time = release_time.replace(hour=release_time.hour + 8)
         release_time = release_time.strftime('%Y-%m-%dT%H:%M:%S+08')
-        for i in mcver_group_id:
-            int(i)
-            await bot.send_group_msg(
-                group_id=i,
-                message=Message(f'发现MC更新：{version["id"]} ({version["type"]})\n时间：{release_time}')
-            )
+        
+        # 检查是否配置了群组ID
+        if mcver_group_id:
+            for group_id in mcver_group_id:
+                try:
+                    await bot.send_group_msg(
+                        group_id=int(group_id),
+                        message=Message(f'发现MC更新：{version["id"]} ({version["type"]})\n时间：{release_time}')
+                    )
+                except Exception as e:
+                    logger.error(f"向群组 {group_id} 发送MC更新消息失败: {e}")
+            logger.success("已发现并成功推送MC版本更新信息")
+        else:
+            logger.warning("未配置MC版本更新推送群组，跳过推送")
+            
         with open('data/latest_version.txt', 'w') as f:
             f.write(version["id"])
-        logger.success("已发现并成功推送MC版本更新信息")
 
 # 定义定时任务，每分钟检查一次Minecraft更新
 @scheduler.scheduled_job('interval', minutes=1)
