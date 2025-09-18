@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-mcversion"
-version = "0.3.2"
+version = "0.3.3"
 description = "NoneBot2 plugin for CheckMCupdate"
 authors = [
     {name = "CN171-1", email = "3428166361@qq.com"},
@@ -17,3 +17,4 @@ Repository = "https://github.com/CN171-1/nonebot-plugin-mcversion"
 [build-system]
 requires = ["pdm-pep517>=0.12.0"]
 build-backend = "pdm.pep517.api"
+
