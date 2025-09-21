@@ -66,14 +66,14 @@
 
 - `mcver_group_id`：指定检查 Minecraft 更新后发送消息的群组 ID。
 
-```python
+```
 mcver_group_id = [123456, 789012]
 ```
 
 ## 鸣谢
 
-- [nonebot_plugin_apscheduler](https://github.com/nonebot/nonebot-plugin-apscheduler) - NoneBot 的定时任务插件
+- [nonebot_plugin_apscheduler](https://github.com/nonebot/plugin-apscheduler) - NoneBot 的定时任务插件
 
 ## 反馈
 
-- 问题跟踪：[GitHub Issues](https://github.com/your_username/your_project/issues)
+- 问题跟踪：[GitHub Issues](https://github.com/CN171-1/nonebot-plugin-mcversion/issues)
