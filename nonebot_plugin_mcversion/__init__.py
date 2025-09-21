@@ -20,7 +20,7 @@ from nonebot.adapters.onebot.v11.message import Message
 
 # 定义配置模型
 class MCVersionConfig(BaseModel):
-    mcver_group_id: list[str] = []
+    mcver_group_id: list[int | str] = []
     """MC版本更新推送的群组ID列表"""
 
 # 获取配置
