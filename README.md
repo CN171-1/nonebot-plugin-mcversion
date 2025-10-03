@@ -75,7 +75,7 @@ mcver_proxies = "http://127.0.0.1:7890"
 
 ## 鸣谢
 
-- [nonebot_plugin_apscheduler](https://github.com/nonebot/plugin-apscheduler) - NoneBot 的定时任务插件
+- [nonebot-plugin-apscheduler](https://github.com/nonebot/plugin-apscheduler) - NoneBot 的定时任务插件
 
 ## 反馈
 
