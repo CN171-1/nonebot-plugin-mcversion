@@ -20,12 +20,14 @@ from nonebot.adapters.onebot.v11.message import Message
 
 # 定义配置模型
 class MCVersionConfig(BaseModel):
+    mcver_proxies: str = None  # 代理设置
     mcver_group_id: list[int | str] = []
     """MC版本更新推送的群组ID列表"""
 
 # 获取配置
 config = get_plugin_config(MCVersionConfig)
 mcver_group_id = config.mcver_group_id
+proixes = config.mcver_proxies
 
 # 定义命令“mcver”
 mcver = on_command('mcver', aliases={'mcversion', 'MC版本'}, priority=50)
@@ -34,7 +36,7 @@ mcver = on_command('mcver', aliases={'mcversion', 'MC版本'}, priority=50)
 @mcver.handle()
 async def mcver_handle():
     # 获取Minecraft版本信息
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(proxies=proixes) as client:
         response = await client.get("http://launchermeta.mojang.com/mc/game/version_manifest.json")
     data = response.json()
     latest_release = data['latest']['release']
@@ -48,7 +50,7 @@ scheduler = require('nonebot_plugin_apscheduler').scheduler
 # 定义异步函数，用于检查Minecraft更新
 async def check_mc_update(bot: Bot):
     # 获取Minecraft版本信息
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(proxies=proixes) as client:
         response = await client.get("http://launchermeta.mojang.com/mc/game/version_manifest.json")
     data = response.json()
     version = data["versions"][0]

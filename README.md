@@ -65,9 +65,12 @@
 在配置文件中必须进行以下设置：
 
 - `mcver_group_id`：指定检查 Minecraft 更新后发送消息的群组 ID。
+- `mcver_proixes`：指定使用的代理地址
 
+例如：
 ```
 mcver_group_id = [123456, 789012]
+mcver_proxies = "http://127.0.0.1:7890"
 ```
 
 ## 鸣谢
