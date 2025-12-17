@@ -83,7 +83,7 @@ async def check_mc_update(bot: Bot):
             f.write(version["id"])
 
 # 定义定时任务，每分钟检查一次Minecraft更新
-@scheduler.scheduled_job('interval', minutes=1)
+@scheduler.scheduled_job('interval', minutes=1, misfire_grace_time=10)
 async def mc_update_check():
     bots = get_bots()
     bot = None  # 初始化bot为None
